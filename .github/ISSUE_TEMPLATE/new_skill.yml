@@ -1,0 +1,36 @@
+name: New puzzle / skill idea
+description: Suggest a new kind of math question or a new world
+labels: [ new skill, enhancement ]
+body:
+  - type: markdown
+    attributes:
+      value: Check the [Roadmap](../blob/master/README.md#roadmap) first. A 👍 on an existing issue helps us prioritize. Want to build it yourself? See [Adding a new kind of question](../blob/master/CONTRIBUTING.md#adding-a-new-kind-of-question).
+  - type: input
+    id: topic
+    attributes:
+      label: Math topic
+      placeholder: e.g. comparing fractions, square roots, simple equations
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: Example questions
+      description: Two or three examples, with their answers.
+      placeholder: |
+        Which is bigger: 3/4 or 5/8?  → 3/4
+        ...
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: Answer format
+      options: [ Multiple choice, Type a number, Not sure ]
+    validations:
+      required: true
+  - type: textarea
+    id: difficulty
+    attributes:
+      label: What makes it easy, medium or hard?
+      placeholder: Easy uses halves and quarters, hard uses any denominator up to 12 ...

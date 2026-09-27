@@ -23,6 +23,9 @@ public partial class MapViewModel : ViewModelBase
     public IReadOnlyList<WorldItem> Worlds { get; }
 
     public string StarsSummary { get; }
+
+    /// <summary>The app version, e.g. "v3.0.0", so players can quote it in bug reports.</summary>
+    public string Version { get; } = "v" + typeof(MapViewModel).Assembly.GetName().Version?.ToString(3);
 }
 
 public sealed record WorldItem(string Title, string Description, IReadOnlyList<StageItem> Stages);

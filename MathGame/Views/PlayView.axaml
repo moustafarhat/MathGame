@@ -59,14 +59,19 @@
             </StackPanel>
 
             <!-- Feedback; the Panel keeps its space reserved so the question doesn't jump when it appears. -->
-            <Panel MinHeight="130">
+            <Panel MinHeight="160">
                 <StackPanel Spacing="4" HorizontalAlignment="Center" IsVisible="{Binding IsAnswered}">
                     <TextBlock Text="{Binding Feedback}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"
                                Foreground="{StaticResource CorrectBrush}" IsVisible="{Binding WasCorrect}"/>
                     <TextBlock Text="{Binding Feedback}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"
                                Foreground="{StaticResource WrongBrush}" IsVisible="{Binding !WasCorrect}"/>
+                    <TextBlock Text="{Binding YourAnswer}" FontSize="15" HorizontalAlignment="Center"
+                               Classes="muted" TextWrapping="Wrap" TextAlignment="Center"
+                               IsVisible="{Binding HasYourAnswer}"/>
+                    <TextBlock Text="{Binding Explanation, StringFormat='Answer: {0}'}" FontSize="16" HorizontalAlignment="Center"
+                               TextWrapping="Wrap" TextAlignment="Center" IsVisible="{Binding !WasCorrect}"/>
                     <TextBlock Text="{Binding Explanation}" FontSize="16" HorizontalAlignment="Center"
-                               TextWrapping="Wrap" TextAlignment="Center"/>
+                               TextWrapping="Wrap" TextAlignment="Center" IsVisible="{Binding WasCorrect}"/>
                     <Button Content="Continue" Command="{Binding ContinueCommand}" IsVisible="{Binding ShowContinue}"
                             HorizontalAlignment="Center" Margin="0,8,0,0" Padding="24,8" Classes="accent"/>
                 </StackPanel>

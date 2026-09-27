@@ -1,0 +1,23 @@
+name: Feature request
+description: Suggest an improvement to the game itself
+labels: [ enhancement ]
+body:
+  - type: markdown
+    attributes:
+      value: Check the [Roadmap](../blob/master/README.md#roadmap) first. For a new kind of question, use the **New puzzle / skill idea** form instead.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: What would you like to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've considered

@@ -1,0 +1,177 @@
+name: Release
+
+# Every push to master reads <Version> from MathGame/MathGame.csproj. If there is
+# no release for that version yet, it tests, packages the app for Windows, Linux
+# and macOS, and publishes release v<Version>. Pushes without a version bump
+# are skipped.
+#
+# Pull requests run the packaging too, without releasing, so a broken package
+# is caught before merge.
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+      release: ${{ steps.version.outputs.release }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Read version and check for an existing release
+        id: version
+        run: |
+          version=$(grep -oPm1 '(?<=<Version>)[^<]+' MathGame/MathGame.csproj)
+          if [ -z "$version" ]; then echo "::error::No <Version> in MathGame/MathGame.csproj"; exit 1; fi
+          tag="v$version"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Pull request: packaging $tag without releasing."
+            release=false
+          elif git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null; then
+            echo "Release $tag already exists, skipping. Bump <Version> to publish a new one."
+            release=false
+          else
+            echo "Will publish $tag."
+            release=true
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "release=$release" >> "$GITHUB_OUTPUT"
+
+  package:
+    needs: version
+    if: needs.version.outputs.release == 'true' || github.event_name == 'pull_request'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Each platform builds on its own OS: Windows embeds the icon and
+          # manifest, macOS ad-hoc signs the .app bundle.
+          - { rid: win-x64,   os: windows-latest }
+          - { rid: linux-x64, os: ubuntu-latest }
+          - { rid: osx-arm64, os: macos-latest }
+          - { rid: osx-x64,   os: macos-latest }
+    runs-on: ${{ matrix.os }}
+    env:
+      NAME: MathGame-${{ needs.version.outputs.tag }}-${{ matrix.rid }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Test
+        run: dotnet test MathGame.sln --configuration Release
+
+      - name: Publish self-contained app
+        run: >
+          dotnet publish MathGame/MathGame.csproj
+          -c Release -r ${{ matrix.rid }} --self-contained true
+          -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:EnableCompressionInSingleFile=true -p:DebugType=none
+          -o publish
+
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path publish/* -DestinationPath "$env:NAME.zip"
+
+      - name: Package (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          chmod +x publish/MathGame
+          tar -czf "$NAME.tar.gz" -C publish .
+
+      - name: Package (macOS .app)
+        if: runner.os == 'macOS'
+        run: |
+          app="Math Game.app"
+          mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
+          cp -R publish/* "$app/Contents/MacOS/"
+          chmod +x "$app/Contents/MacOS/MathGame"
+
+          # Build an .icns from the 256px logo.
+          iconset=MathGame.iconset
+          mkdir "$iconset"
+          for size in 16 32 128 256; do
+            sips -z $size $size docs/logo.png --out "$iconset/icon_${size}x${size}.png" > /dev/null
+          done
+          iconutil -c icns "$iconset" -o "$app/Contents/Resources/MathGame.icns"
+
+          cat > "$app/Contents/Info.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>CFBundleName</key><string>Math Game</string>
+            <key>CFBundleDisplayName</key><string>Math Game</string>
+            <key>CFBundleIdentifier</key><string>io.github.moustafarhat.mathgame</string>
+            <key>CFBundleVersion</key><string>${{ needs.version.outputs.version }}</string>
+            <key>CFBundleShortVersionString</key><string>${{ needs.version.outputs.version }}</string>
+            <key>CFBundleExecutable</key><string>MathGame</string>
+            <key>CFBundleIconFile</key><string>MathGame</string>
+            <key>CFBundlePackageType</key><string>APPL</string>
+            <key>LSMinimumSystemVersion</key><string>12.0</string>
+            <key>NSHighResolutionCapable</key><true/>
+          </dict>
+          </plist>
+          EOF
+
+          # Ad-hoc signature: required to run on Apple Silicon. It isn't notarized,
+          # so the first launch needs right-click → Open (see README).
+          codesign --force --deep --sign - "$app"
+          ditto -c -k --keepParent "$app" "$NAME.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.rid }}
+          path: MathGame-*
+          if-no-files-found: error
+
+  release:
+    needs: [ version, package ]
+    if: needs.version.outputs.release == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.version.outputs.tag }}
+          name: Math Game ${{ needs.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          files: dist/*
+          generate_release_notes: true
+          body: |
+            ## Download
+
+            | Platform | File |
+            |---|---|
+            | Windows 10/11 (64-bit) | `MathGame-${{ needs.version.outputs.tag }}-win-x64.zip`: unzip and run `MathGame.exe` |
+            | macOS (Apple Silicon) | `MathGame-${{ needs.version.outputs.tag }}-osx-arm64.zip` |
+            | macOS (Intel) | `MathGame-${{ needs.version.outputs.tag }}-osx-x64.zip` |
+            | Linux (x64) | `MathGame-${{ needs.version.outputs.tag }}-linux-x64.tar.gz`: extract and run `./MathGame` |
+
+            No .NET install needed; each download is self-contained.
+
+            **macOS:** the app isn't notarized. The first time, right-click **Math Game** → **Open** → **Open**.
+            **Windows:** if SmartScreen warns, click **More info** → **Run anyway**.
+
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/master/CHANGELOG.md) for what's new.

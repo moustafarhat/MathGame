@@ -17,7 +17,13 @@ public sealed class GuessOperatorSkill : ISkill
 
         // More than one operator can be right (2 ? 2 = 4 is both + and ×), so mark every one that works.
         var choices = Enum.GetValues<Operation>()
-            .Select(op => new Choice(op.Symbol().ToString(), op.Apply(left, right) == result, op.Keys()))
+            .Select(op => new Choice(
+                op.Symbol().ToString(),
+                op.Apply(left, right) == result,
+                op.Keys(),
+                op.Apply(left, right) is { } value
+                    ? $"{left} {op.Symbol()} {right} = {Format.Number(value)}"
+                    : $"{left} {op.Symbol()} {right} isn't a whole number"))
             .ToList();
 
         var explanation = string.Join(

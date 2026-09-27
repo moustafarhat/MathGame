@@ -1,84 +1,121 @@
+<div align="center">
+
+<img src="docs/logo.png" alt="Math Game logo" width="120">
+
 # Math Game
 
-A desktop math game for Windows, Linux and macOS. It is split into worlds of short stages. Each stage asks 8 to 12 questions, and your score earns up to three stars. A star unlocks the next stage, and every world ends with a boss stage that mixes all of its skills at a harder level.
+**A free, open-source math puzzle game for Windows, macOS and Linux.**
+Work through worlds of short stages, earn stars, beat the boss, and learn from every wrong answer.
+
+[![CI](https://github.com/moustafarhat/MathGame/actions/workflows/ci.yml/badge.svg)](https://github.com/moustafarhat/MathGame/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/moustafarhat/MathGame?sort=semver)](https://github.com/moustafarhat/MathGame/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/moustafarhat/MathGame/total)](https://github.com/moustafarhat/MathGame/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-informational)
+[![.NET 10](https://img.shields.io/badge/.NET-10-512BD4)](https://dotnet.microsoft.com/)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+### [⬇ Download for Windows, macOS or Linux](https://github.com/moustafarhat/MathGame/releases/latest)
+
+Free · Offline · No account, no ads, no tracking
+
+<img src="docs/map.png" alt="World map with stages, stars and locked levels" width="49%"> <img src="docs/explain.png" alt="A wrong answer explained: your pick, the right answer, and why" width="49%">
+
+</div>
+
+## Why Math Game?
+
+- **It teaches instead of just scoring.** After a wrong answer you see what your pick actually works out to, the right answer, and the step that matters, for example *"× first: 2 × 4 = 8"*.
+- **It's fair.** If more than one answer is mathematically right, every one of them counts, and division questions always come out whole.
+- **It grows with the player.** Stages get harder world by world, and each world ends in a boss stage that mixes everything you've learned.
+- **It runs anywhere and keeps your data private.** Self-contained builds for every OS, with nothing to install. The game never goes online.
+- **It's easy to extend.** A new kind of question is one small C# class; see [Adding a new kind of question](CONTRIBUTING.md#adding-a-new-kind-of-question).
 
 ## Worlds
 
-| World | Stages |
-|---|---|
-| **1. Arithmetic** | Find the operator (`12 ? 5 = 60`), missing numbers (`12 + ? = 20`), bigger numbers, order of operations (`3 ? 4 ? 2 = 11`), boss |
-| **2. Numbers** | Prime or not, prime factors (`60 = 2 × 2 × 3 × 5`), below zero (`−7 + (−3) = ?`), harder primes, boss |
+| World | Stages | Example |
+|---|---|---|
+| **1 · Arithmetic** | Find the operator · Missing numbers · Bigger numbers · Order of operations · **Boss** | `4 ? 2 ? 4 = 12` |
+| **2 · Numbers** | Prime or not · Prime factors · Below zero · Harder primes · **Boss** | `Which is the prime factorisation of 60?` |
+
+More worlds are on the [roadmap](#roadmap).
 
 ## How to play
 
-- **Multiple choice:** click an answer, or press `1` to `4`. Some questions have their own shortcut keys:
-  - Operators: `P` or `+`, `M` or `-`, `X` or `*`, `D` or `/`
-  - Prime or not: `Y` or `N`
-- **Number answers:** type the answer and press `Enter`. Both `-` and `−` work as the minus sign.
-- If more than one answer is right (for example `2 ? 2 = 4`), any of them counts.
-- After a right answer the game moves on by itself. After a wrong one, it shows the correct answer with an explanation, and you press `Enter` to continue.
+- **Pick an answer:** click it, or press `1`–`4`. The classic operator keys work too (`P` `M` `X` `D`, or `+` `-` `*` `/`), and `Y` / `N` answer "prime or not".
+- **Type a number:** type it and press `Enter`. Both `-` and `−` work for negative numbers.
+- A right answer moves on by itself. After a wrong one, read the explanation and press `Enter`.
 - `Esc` takes you back to the map.
 
-### Stars
+**Stars:** 60% correct earns ★, 80% earns ★★ and 95% earns ★★★. One star unlocks the next stage. Your best result per stage is saved locally.
 
-| Correct | Stars |
-|---|---|
-| 95% or more | ★★★ |
-| 80% or more | ★★☆ |
-| 60% or more | ★☆☆ |
-| Below 60% | Not passed; the next stage stays locked |
+## Download
 
-Your best result for each stage is saved in `progress.json` in the per-user application data folder:
+Every release has ready-to-run builds on the [Releases page](https://github.com/moustafarhat/MathGame/releases/latest). No .NET installation is needed.
 
-| OS | Location |
-|---|---|
-| Windows | `%LOCALAPPDATA%\MathGame\progress.json` |
-| Linux | `~/.local/share/MathGame/progress.json` |
-| macOS | `~/Library/Application Support/MathGame/progress.json` |
+| Platform | File | How to start |
+|---|---|---|
+| Windows 10/11 | `MathGame-vX.Y.Z-win-x64.zip` | Unzip and run `MathGame.exe` |
+| macOS (Apple Silicon) | `MathGame-vX.Y.Z-osx-arm64.zip` | Unzip, then open **Math Game** |
+| macOS (Intel) | `MathGame-vX.Y.Z-osx-x64.zip` | Unzip, then open **Math Game** |
+| Linux x64 | `MathGame-vX.Y.Z-linux-x64.tar.gz` | Extract and run `./MathGame` |
 
-## Build, test and run
+> **First launch:** the builds aren't code-signed yet.
+> - On **macOS**, right-click **Math Game** → **Open** → **Open**.
+> - On **Windows**, if SmartScreen appears, click **More info** → **Run anyway**.
 
-You need the [.NET 10 SDK](https://dotnet.microsoft.com/download).
+## Build from source
 
-```sh
-dotnet build MathGame.sln
-dotnet test MathGame.sln
-dotnet run --project MathGame/MathGame.csproj
-```
-
-To build a self-contained copy for another platform:
+You need the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
 ```sh
-dotnet publish MathGame/MathGame.csproj -c Release -r linux-x64 --self-contained -p:PublishSingleFile=true
+git clone https://github.com/moustafarhat/MathGame.git
+cd MathGame
+dotnet run --project MathGame/MathGame.csproj   # play
+dotnet test                                     # 130+ tests
 ```
 
-Other runtime ids: `win-x64`, `osx-arm64` (Apple Silicon), `osx-x64` (Intel Mac).
+### Project layout
 
-On macOS the published app is a plain executable, not a signed `.app` bundle. Run it from Terminal. If Gatekeeper blocks it, clear the quarantine flag first with `xattr -d com.apple.quarantine MathGame`.
+```
+MathGame.Core/        Game logic, no UI
+├── Skills/           One class per kind of question (ISkill)
+├── Stages/           stages.json: worlds, stages, difficulty
+└── Play/             Playing a stage, stars, saved progress
+MathGame/             Avalonia 12 desktop app (MVVM)
+MathGame.Tests/       xunit tests, checked against an independent evaluator
+```
 
-## Project layout
+### Releases are automatic
 
-| Project | What it contains |
-|---|---|
-| `MathGame.Core` | Game logic with no UI: skills, challenges, stages, scoring and saved progress |
-| `MathGame` | The [Avalonia](https://avaloniaui.net/) desktop app: MVVM view models and views over `MathGame.Core` |
-| `MathGame.Tests` | xunit tests for `MathGame.Core` |
+1. Bump `<Version>` in [`MathGame/MathGame.csproj`](MathGame/MathGame.csproj).
+2. Add an entry to [CHANGELOG.md](CHANGELOG.md).
+3. Merge to `master`.
 
-### How the game is put together
+The [Release workflow](.github/workflows/release.yml) then tests the app on each platform, packages Windows, Linux and both macOS builds (including a proper `.app` bundle), and publishes release `v<Version>` with release notes. Pushes that don't change the version don't create a release, and pull requests run the same packaging without releasing.
 
-- A **skill** (`ISkill`) generates **challenges** at a given difficulty (easy, medium or hard). There are two kinds of challenge:
-  - `ChoiceChallenge`: pick from a list; more than one choice can be correct.
-  - `NumberChallenge`: type a whole number.
-- **Stages** are listed in [`MathGame.Core/Stages/stages.json`](MathGame.Core/Stages/stages.json). Each stage names its skills, its difficulty and how many questions it has.
-- `StageRun` plays through one stage, and `ProgressStore` saves the best star rating for each stage.
+## Roadmap
 
-### Adding content
+- [x] Worlds 1–2: arithmetic, primes and negative numbers
+- [x] Explanations for every wrong answer
+- [x] Windows, macOS and Linux builds
+- [ ] **World 3 · Fractions & percentages:** compare, simplify, equivalent fractions, percent of a number
+- [ ] **World 4 · Powers & roots:** `2^? = 32`, estimating square roots
+- [ ] **World 5 · Algebra:** balance-scale equations, `3x + 4 = 19`
+- [ ] **World 6 · Sequences & patterns:** arithmetic and geometric sequences, what comes next?
+- [ ] Speed stars and a timed challenge mode
+- [ ] Adaptive difficulty and spaced review of weak skills
+- [ ] Translations (Arabic, German, Spanish, …) and right-to-left layout
+- [ ] Dark-mode polish and larger-text accessibility mode
 
-- **New stage:** add an entry to `stages.json`. No code changes are needed.
-- **New kind of question:**
-  1. Write a class that implements `ISkill`.
-  2. Register it in `SkillRegistry.Default`.
-  3. Use its id in `stages.json`.
-  4. Add it to the tests. `SkillTests` already checks that every registered skill produces well-formed challenges at every difficulty.
+Want one of these? 👍 the issue, or [build it](CONTRIBUTING.md). New skills are the best first contribution.
 
-CI in `.github/workflows/dotnet-desktop.yml` builds and tests on Windows, Linux and macOS. It then publishes self-contained builds for all four runtime ids as build artifacts.
+## Contributing
+
+Contributions of every size are welcome: new question types, translations, bug reports and UI polish. Start with [CONTRIBUTING.md](CONTRIBUTING.md). Please follow the [Code of Conduct](CODE_OF_CONDUCT.md), and report security issues [privately](SECURITY.md).
+
+If you like the game, **a ⭐ on the repo** helps other people find it.
+
+## License
+
+[MIT](LICENSE) © 2018-2026 Moustafa Farhat
