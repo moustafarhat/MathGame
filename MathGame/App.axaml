@@ -1,0 +1,37 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MathGame.App"
+             xmlns:local="using:MathGame"
+             RequestedThemeVariant="Default">
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+
+    <Application.Resources>
+        <SolidColorBrush x:Key="CorrectBrush" Color="#2E8B57"/>
+        <SolidColorBrush x:Key="WrongBrush" Color="#C0392B"/>
+        <SolidColorBrush x:Key="StarBrush" Color="#E0A800"/>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+
+        <!-- Defined after FluentTheme so they win over its hover/pressed backgrounds. -->
+        <Style Selector="Button.correct /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource CorrectBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        <Style Selector="Button.wrong /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource WrongBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style Selector="TextBlock.stars">
+            <Setter Property="Foreground" Value="{StaticResource StarBrush}"/>
+        </Style>
+        <Style Selector="TextBlock.muted">
+            <Setter Property="Opacity" Value="0.7"/>
+        </Style>
+    </Application.Styles>
+</Application>
