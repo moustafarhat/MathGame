@@ -33,18 +33,19 @@ public sealed class PrimeFactorsSkill : ISkill
         var number = Product(factors);
         var correct = Format.Product(factors);
 
-        var distractors = new HashSet<string>();
+        var distractors = new Dictionary<string, List<int>>();
         for (var attempt = 0; distractors.Count < DistractorCount && attempt < 100; attempt++)
         {
-            var label = Format.Product(NearMiss(random, factors, pool).Order());
+            var miss = NearMiss(random, factors, pool).Order().ToList();
+            var label = Format.Product(miss);
             if (label != correct)
             {
-                distractors.Add(label);
+                distractors.TryAdd(label, miss);
             }
         }
 
         var choices = distractors
-            .Select(label => new Choice(label, false))
+            .Select(d => new Choice(d.Key, false, Note: WhyWrong(d.Value, number)))
             .Append(new Choice(correct, true))
             .OrderBy(_ => random.Next())
             .ToList();
@@ -88,6 +89,19 @@ public sealed class PrimeFactorsSkill : ISkill
         }
 
         return copy;
+    }
+
+    private static string WhyWrong(List<int> factors, int number)
+    {
+        var product = Product(factors);
+        if (product != number)
+        {
+            return $"{Format.Product(factors)} = {product}, not {number}";
+        }
+
+        var composite = factors.First(f => !Primes.IsPrime(f));
+        var d = Primes.SmallestFactor(composite);
+        return $"{composite} isn't prime ({composite} = {d} × {composite / d})";
     }
 
     private static int Product(IEnumerable<int> factors) => factors.Aggregate(1, (a, b) => a * b);

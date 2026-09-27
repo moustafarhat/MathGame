@@ -54,6 +54,11 @@ public partial class PlayViewModel : ViewModelBase
     [ObservableProperty]
     private string _explanation = "";
 
+    /// <summary>After a wrong answer: what the player's pick actually works out to.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasYourAnswer))]
+    private string _yourAnswer = "";
+
     public PlayViewModel(MainWindowViewModel main, StageRun run)
     {
         _main = main;
@@ -71,6 +76,8 @@ public partial class PlayViewModel : ViewModelBase
 
     /// <summary>Wrong answers wait for the player to read the explanation; right ones move on by themselves.</summary>
     public bool ShowContinue => IsAnswered && !WasCorrect;
+
+    public bool HasYourAnswer => YourAnswer.Length > 0;
 
     /// <summary>Equations read best large; worded questions need to fit on a line or two.</summary>
     public double PromptFontSize => Prompt.Length > 20 ? 28 : 40;
@@ -129,6 +136,11 @@ public partial class PlayViewModel : ViewModelBase
             Choices[i].IsMarkedWrong = i == index && !correct;
         }
 
+        if (!correct && _run.Current is ChoiceChallenge { } challenge && challenge.Choices[index].Note is { Length: > 0 } note)
+        {
+            YourAnswer = $"Your pick: {note}";
+        }
+
         ShowFeedback(correct);
     }
 
@@ -138,7 +150,13 @@ public partial class PlayViewModel : ViewModelBase
     private void SubmitNumber()
     {
         NumberChallenge.TryParseAnswer(AnswerText, out var value);
-        ShowFeedback(_run.Submit(new NumberGuess(value)));
+        var correct = _run.Submit(new NumberGuess(value));
+        if (!correct)
+        {
+            YourAnswer = $"You answered {Format.Number(value)}";
+        }
+
+        ShowFeedback(correct);
     }
 
     [RelayCommand]
@@ -191,6 +209,7 @@ public partial class PlayViewModel : ViewModelBase
         WasCorrect = false;
         Feedback = "";
         Explanation = "";
+        YourAnswer = "";
         AnswerText = "";
 
         Choices.Clear();

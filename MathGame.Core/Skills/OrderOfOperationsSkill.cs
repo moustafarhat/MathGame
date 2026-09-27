@@ -42,15 +42,22 @@ public sealed class OrderOfOperationsSkill : ISkill
 
         string Expression((Operation X, Operation Y) p) => $"{a} {p.X.Symbol()} {b} {p.Y.Symbol()} {c}";
 
+        // "2 + 2 × 5 = 12   (× first: 2 × 5 = 10)" — spell out the step people get wrong.
+        string Worked((Operation X, Operation Y) p)
+        {
+            var text = $"{Expression(p)} = {Format.Number(Arithmetic.Evaluate(a, p.X, b, p.Y, c)!.Value)}";
+            return Arithmetic.IsMultiplicative(p.Y) && !Arithmetic.IsMultiplicative(p.X)
+                ? $"{text}   (× first: {b} × {c} = {b * c})"
+                : text;
+        }
+
         var choices = shown
-            .Select(p => new Choice(Expression(p), Arithmetic.Evaluate(a, p.X, b, p.Y, c) == result))
+            .Select(p => new Choice(Expression(p), Arithmetic.Evaluate(a, p.X, b, p.Y, c) == result, Note: Worked(p)))
             .ToList();
 
-        var explanation = $"{Expression((op1, op2))} = {Format.Number(result)}";
-        if (Arithmetic.IsMultiplicative(op2) && !Arithmetic.IsMultiplicative(op1))
-        {
-            explanation += $"   (× first: {b} × {c} = {b * c})";
-        }
+        var explanation = string.Join(
+            "  and  ",
+            shown.Where(p => Arithmetic.Evaluate(a, p.X, b, p.Y, c) == result).Select(Worked));
 
         return new ChoiceChallenge(Id, $"{a} ? {b} ? {c} = {Format.Number(result)}", explanation, choices);
     }

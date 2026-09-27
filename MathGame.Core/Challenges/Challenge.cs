@@ -19,7 +19,9 @@ public abstract record Challenge(string SkillId, string Prompt, string Explanati
 }
 
 /// <param name="Keys">Keyboard shortcuts besides the choice's position number, e.g. "p+" for addition.</param>
-public sealed record Choice(string Label, bool IsCorrect, string Keys = "");
+/// <param name="Note">What this choice actually works out to, e.g. <c>2 + 2 × 5 = 12</c>.
+/// Shown when a player picks it wrongly, so they see why it doesn't fit.</param>
+public sealed record Choice(string Label, bool IsCorrect, string Keys = "", string Note = "");
 
 /// <summary>Pick one of several answers. More than one may be correct.</summary>
 public sealed record ChoiceChallenge(string SkillId, string Prompt, string Explanation, IReadOnlyList<Choice> Choices)

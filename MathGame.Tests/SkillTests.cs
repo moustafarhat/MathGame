@@ -127,10 +127,42 @@ public class SkillTests
     public void Order_of_operations_easy_always_mixes_multiply_with_add_or_subtract()
     {
         Assert.All(Generate<ChoiceChallenge>("order-of-operations", Difficulty.Easy), challenge =>
+            Assert.Contains(challenge.Choices, c => c.IsCorrect && c.Label.Count(ch => ch == '×') == 1));
+    }
+
+    [Theory]
+    [InlineData("guess-operator")]
+    [InlineData("order-of-operations")]
+    public void Choice_notes_show_what_each_choice_really_equals(string skillId)
+    {
+        Assert.All(Generate<ChoiceChallenge>(skillId, Difficulty.Hard), challenge =>
         {
-            var correct = challenge.Choices.First(c => c.IsCorrect && challenge.Explanation.StartsWith(c.Label));
-            Assert.Equal(1, correct.Label.Count(ch => ch == '×'));
+            foreach (var choice in challenge.Choices.Where(c => !c.Note.Contains("whole number")))
+            {
+                // Drop the "(× first: ...)" hint, then the note must be a true equation.
+                Assert.True(TestHelpers.Holds(choice.Note.Split("   (")[0]), choice.Note);
+            }
         });
+    }
+
+    [Fact]
+    public void Order_of_operations_explains_every_correct_choice()
+    {
+        Assert.All(Generate<ChoiceChallenge>("order-of-operations", Difficulty.Hard), challenge =>
+        {
+            foreach (var choice in challenge.Choices.Where(c => c.IsCorrect))
+            {
+                Assert.Contains(choice.Label, challenge.Explanation);
+            }
+        });
+    }
+
+    [Fact]
+    public void Prime_factors_notes_explain_each_wrong_choice()
+    {
+        Assert.All(Generate<ChoiceChallenge>("prime-factors", Difficulty.Hard), challenge =>
+            Assert.All(challenge.Choices.Where(c => !c.IsCorrect), c =>
+                Assert.Matches(@"(, not \d+$)|(isn't prime)", c.Note)));
     }
 
     [Theory]

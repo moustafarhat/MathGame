@@ -11,6 +11,9 @@
                        FontSize="20" VerticalAlignment="Center"/>
         </Grid>
 
+        <TextBlock DockPanel.Dock="Bottom" Classes="muted" FontSize="12" HorizontalAlignment="Center"
+                   Margin="0,8,0,0" Text="{Binding Version, StringFormat='Math Game {0} · github.com/moustafarhat/MathGame'}"/>
+
         <ScrollViewer>
             <ItemsControl ItemsSource="{Binding Worlds}">
                 <ItemsControl.ItemTemplate>

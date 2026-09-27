@@ -1,0 +1,42 @@
+name: Bug report
+description: Something doesn't work, or a question has a wrong answer
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting! If a question's answer is wrong, a screenshot of the question and the explanation helps most.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open stage 1-4 (Order of operations)
+        2. Answer ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Shown at the bottom of the map screen, e.g. v3.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options: [ Windows, macOS (Apple Silicon), macOS (Intel), Linux ]
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Screenshots, error messages, anything that might help.
