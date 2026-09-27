@@ -1,0 +1,28 @@
+{
+  "worlds": [
+    {
+      "id": "arithmetic",
+      "title": "Arithmetic",
+      "description": "Operators, missing numbers and the order of operations.",
+      "stages": [
+        { "id": "arithmetic-1", "title": "Find the operator", "skills": [ "guess-operator" ], "difficulty": "easy", "questions": 8 },
+        { "id": "arithmetic-2", "title": "Missing numbers", "skills": [ "missing-number" ], "difficulty": "easy", "questions": 8 },
+        { "id": "arithmetic-3", "title": "Bigger numbers", "skills": [ "guess-operator", "missing-number" ], "difficulty": "medium", "questions": 10 },
+        { "id": "arithmetic-4", "title": "Order of operations", "skills": [ "order-of-operations" ], "difficulty": "easy", "questions": 8 },
+        { "id": "arithmetic-boss", "title": "Arithmetic boss", "skills": [ "guess-operator", "missing-number", "order-of-operations" ], "difficulty": "hard", "questions": 12, "boss": true }
+      ]
+    },
+    {
+      "id": "numbers",
+      "title": "Numbers",
+      "description": "Primes, prime factors and numbers below zero.",
+      "stages": [
+        { "id": "numbers-1", "title": "Prime or not", "skills": [ "prime-or-not" ], "difficulty": "easy", "questions": 10 },
+        { "id": "numbers-2", "title": "Prime factors", "skills": [ "prime-factors" ], "difficulty": "easy", "questions": 8 },
+        { "id": "numbers-3", "title": "Below zero", "skills": [ "negative-numbers" ], "difficulty": "easy", "questions": 8 },
+        { "id": "numbers-4", "title": "Harder primes", "skills": [ "prime-or-not", "prime-factors" ], "difficulty": "medium", "questions": 10 },
+        { "id": "numbers-boss", "title": "Numbers boss", "skills": [ "prime-or-not", "prime-factors", "negative-numbers" ], "difficulty": "hard", "questions": 12, "boss": true }
+      ]
+    }
+  ]
+}

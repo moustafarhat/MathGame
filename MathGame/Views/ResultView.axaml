@@ -1,0 +1,23 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MathGame.ViewModels"
+             x:Class="MathGame.Views.ResultView"
+             x:DataType="vm:ResultViewModel">
+
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12" Margin="24">
+        <TextBlock Text="{Binding StageTitle}" Classes="muted" FontSize="16" HorizontalAlignment="Center"/>
+        <TextBlock Text="{Binding Headline}" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center"/>
+        <TextBlock Text="{Binding Stars}" Classes="stars" FontSize="48" HorizontalAlignment="Center"/>
+        <TextBlock Text="{Binding Score}" FontSize="16" HorizontalAlignment="Center"/>
+        <TextBlock Text="{Binding Detail}" Classes="muted" HorizontalAlignment="Center"
+                   TextWrapping="Wrap" TextAlignment="Center" MaxWidth="420"/>
+
+        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" Margin="0,12,0,0">
+            <Button Content="Map" Command="{Binding MapCommand}" Padding="20,8"/>
+            <Button Content="Try again" Command="{Binding RetryCommand}" Padding="20,8"/>
+            <Button Content="Next stage →" Command="{Binding NextCommand}" Padding="20,8" Classes="accent"
+                    IsVisible="{Binding HasNext}"/>
+        </StackPanel>
+    </StackPanel>
+
+</UserControl>

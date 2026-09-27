@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MathGame.ViewModels"
+             x:Class="MathGame.Views.MapView"
+             x:DataType="vm:MapViewModel">
+
+    <DockPanel Margin="24,20">
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+            <TextBlock Text="Math Game" FontSize="28" FontWeight="Bold"/>
+            <TextBlock Grid.Column="1" Text="{Binding StarsSummary}" Classes="stars"
+                       FontSize="20" VerticalAlignment="Center"/>
+        </Grid>
+
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Worlds}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:WorldItem">
+                        <Border Margin="0,0,0,16" Padding="16" CornerRadius="8"
+                                Background="{DynamicResource SystemControlBackgroundAltMediumLowBrush}"
+                                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                BorderThickness="1">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="{Binding Title}" FontSize="20" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding Description}" Classes="muted" TextWrapping="Wrap"/>
+
+                                <ItemsControl ItemsSource="{Binding Stages}" Margin="0,8,0,0">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:StageItem">
+                                            <Button Command="{Binding PlayCommand}"
+                                                    Width="124" Height="96" Margin="0,0,8,8"
+                                                    HorizontalContentAlignment="Stretch"
+                                                    VerticalContentAlignment="Stretch"
+                                                    ToolTip.Tip="{Binding Title}">
+                                                <StackPanel VerticalAlignment="Center" Spacing="2">
+                                                    <TextBlock Text="{Binding Number}" HorizontalAlignment="Center"
+                                                               FontWeight="Bold" FontSize="16"/>
+                                                    <TextBlock Text="{Binding Title}" HorizontalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis" FontSize="12"/>
+                                                    <TextBlock Text="{Binding Stars}" HorizontalAlignment="Center"
+                                                               Classes="stars" FontSize="16"
+                                                               IsVisible="{Binding IsUnlocked}"/>
+                                                    <TextBlock Text="Locked" HorizontalAlignment="Center"
+                                                               Classes="muted" FontSize="12"
+                                                               IsVisible="{Binding !IsUnlocked}"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+
+</UserControl>
