@@ -85,6 +85,11 @@ jobs:
           -p:EnableCompressionInSingleFile=true -p:DebugType=none
           -o publish
 
+      # Native dependencies ship their own debug symbols; players don't need them.
+      - name: Remove debug symbols
+        shell: bash
+        run: rm -f publish/*.pdb publish/*.dbg
+
       - name: Package (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
